@@ -26,6 +26,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.navigation.ActivityNavigatorExtras
 import androidx.navigation.fragment.navArgs
+import com.example.inventory.data.Item
+import com.example.inventory.data.ItemDao
 import com.example.inventory.databinding.FragmentAddItemBinding
 
 /**
@@ -41,8 +43,9 @@ class AddItemFragment : Fragment() {
     private var _binding: FragmentAddItemBinding? = null // стоит вспомнить как создавать бинды на слои
     private val binding get() = _binding!!
     private val viewModel: InventoryViewModel by activityViewModels {
-        InventoryViewModelFactory()
+        InventoryViewModelFactory((activity?.application as InventoryApplication).database.itemDao()) // Что мы передаем как InventoryApplication
     }
+    lateinit var item: Item
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +54,14 @@ class AddItemFragment : Fragment() {
     ): View? {
         _binding = FragmentAddItemBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun isEntryValid(): Boolean {
+        return viewModel.isEntryValid(
+            binding.itemName.text.toString(),
+            binding.itemPrice.text.toString(),
+            binding.itemCount.text.toString()
+        )
     }
 
     /**
